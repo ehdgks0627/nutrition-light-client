@@ -4,26 +4,31 @@ import json
 
 
 class LightManager:
-    HOST = "http://a.com"
+    HOST = "http://naver.com"
     deviceID = "1234"
     itemPK = -1
     lightColor = (128, 64, 200)
     lightStrength = 50
-    PIN_W = 28
-    PIN_
+    PIN_W_sensor = 28
 
     def updateState(self):
-        data = {"deviceID": self.deviceID}
-        response = requests.pos(HOST, data=data)
-        if response.status_code != 200:
-            print("[-] ServerError...")
-        else:
-            body = json.loads(response.text)
-            if body["state"] == "OK":
-                #TODO
-                pass
+        try:
+            data = {"deviceID": self.deviceID}
+            response = requests.post(self.HOST, data=data)
+            if response.status_code != 200:
+                print("[-] ServerError...")
             else:
-                print("[-] FormatError...")
+                try:
+                    body = json.loads(response.text)
+                    if body["state"] == "OK":
+                        #TODO
+                        pass
+                    else:
+                        print("[-] FormatError...")
+                except:
+                    print("[-] FormatError...")
+        except requests.exceptions.ConnectionError:
+            print("[-] NetworkError...")
 
     def getW(self):
         #TODO
@@ -31,7 +36,7 @@ class LightManager:
 
     def __init__(self, mode=gpio.BCM):
         gpio.setmode(mode)
-        gpio.setup(pin_W, gipo.IN)
+        gpio.setup(self.PIN_W_sensor, gpio.IN)
 
     def __str__(self):
         return "LightManager@%s"%(deviceID)
@@ -43,6 +48,7 @@ class LightManager:
 def main():
     try:
         manager = LightManager()
+        manager.updateState()
     except KeyboardInterrupt:
         pass
 

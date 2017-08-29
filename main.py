@@ -9,8 +9,8 @@ class LightManager:
     itemPK = -1
     lightColor = (128, 64, 200)
     lightStrength = 50
-    PIN_W_sensor = 28
-
+    PIN = {"W_sensor": 28, "LED_3000K": 1, "LED_4500K": 2, "LED_6000K": 3, "LED_10000K": 4, "LED_20000K": 5, "LED_30000K": 6}
+    PWM = {}
     def updateState(self):
         try:
             data = {"deviceID": self.deviceID}
@@ -31,12 +31,21 @@ class LightManager:
             print("[-] NetworkError...")
 
     def getW(self):
+        W = GPIO.input(self.PIN["W_sensor"]) #TODO
+        return W
+
+    def driveLED(self):
         #TODO
         pass
 
     def __init__(self, mode=gpio.BCM):
         gpio.setmode(mode)
-        gpio.setup(self.PIN_W_sensor, gpio.IN)
+        gpio.setup(self.PIN["W_sensor"], gpio.IN)
+        for key, value in self.PIN.items():
+            if key.startswith("LED_"):
+                gpio.setup(value, gpio.OUT)
+                self.PWM[key] = gpio.PWM(value, 100)
+                self.PWM[key].start(50)
 
     def __str__(self):
         return "LightManager@%s"%(deviceID)

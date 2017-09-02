@@ -9,14 +9,20 @@ class LightManager:
     itemPK = -1
     lightColor = (128, 64, 200)
     lightStrength = 50
-    PIN = {"W_sensor": 28, "LED_3000K": 1, "LED_4500K": 2, "LED_6000K": 3, "LED_10000K": 4, "LED_20000K": 5, "LED_30000K": 6}
+    PIN = {"W_sensor": 28, "LED_3000K": 1, "LED_4500K": 2, "LED_6000K": 3, "LED_10000K": 4, "LED_20000K": 5, "LED_30000K": 6, "consumption": 29, "temperature": 29}
     PWM = {}
+
     def updateState(self):
-        try:
-            data = {"deviceID": self.deviceID}
-            response = requests.post(self.HOST, data=data)
-            if response.status_code != 200:
-                print("[-] ServerError...")
+        data = {"deviceID": self.deviceID, "consumption": readSensor("consumption"), "temperature": readSensor("temperature")}
+        response = requests.pos(HOST + "/StateDevice", data=data)
+        if response.status_code != 200:
+            print("[-] ServerError...")
+        else:
+            body = json.loads(response.text)
+            if body["state"] == "OK":
+                #TODO
+                #controlDevice(body["item"])
+                pass
             else:
                 try:
                     body = json.loads(response.text)
@@ -30,12 +36,21 @@ class LightManager:
         except requests.exceptions.ConnectionError:
             print("[-] NetworkError...")
 
-    def getW(self):
-        W = GPIO.input(self.PIN["W_sensor"]) #TODO
-        return W
-
-    def driveLED(self):
+    def readSensor(self, command):
+        if command not in PIN:
+            print("%s is not in PIN MAP"%(command))
+            return
+        if command == "consumption":
+            pass
+        elif command == "temperature":
+            pass
         #TODO
+        pass
+
+    def controlDevice(self, item):
+        item["amount"]
+        item["temperature"]
+        item["time"]
         pass
 
     def __init__(self, mode=gpio.BCM):

@@ -13,31 +13,32 @@ class LightManager:
     PWM = {}
 
     def updateState(self):
-        data = {"deviceID": self.deviceID, "consumption": readSensor("consumption"), "temperature": readSensor("temperature")}
-        response = requests.pos(HOST + "/StateDevice", data=data)
-        if response.status_code != 200:
-            print("[-] ServerError...")
-        else:
-            body = json.loads(response.text)
-            if body["state"] == "OK":
-                #TODO
-                #controlDevice(body["item"])
-                pass
+        try:
+            data = {"deviceID": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
+            response = requests.post(self.HOST + "/StateDevice", data=data)
+            if response.status_code != 200:
+                print("[-] ServerError...")
             else:
-                try:
-                    body = json.loads(response.text)
-                    if body["state"] == "OK":
-                        #TODO
-                        pass
-                    else:
+                body = json.loads(response.text)
+                if body["state"] == "OK":
+                    #TODO
+                    #controlDevice(body["item"])
+                    pass
+                else:
+                    try:
+                        body = json.loads(response.text)
+                        if body["state"] == "OK":
+                            #TODO
+                            pass
+                        else:
+                            print("[-] FormatError...")
+                    except:
                         print("[-] FormatError...")
-                except:
-                    print("[-] FormatError...")
         except requests.exceptions.ConnectionError:
             print("[-] NetworkError...")
 
     def readSensor(self, command):
-        if command not in PIN:
+        if command not in self.PIN:
             print("%s is not in PIN MAP"%(command))
             return
         if command == "consumption":

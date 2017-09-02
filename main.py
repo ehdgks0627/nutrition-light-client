@@ -4,7 +4,7 @@ import json
 
 
 class LightManager:
-    HOST = "http://a.com"
+    HOST = "http://naver.com"
     deviceID = "1234"
     itemPK = -1
     lightColor = (128, 64, 200)
@@ -23,7 +23,17 @@ class LightManager:
                 #controlDevice(body["item"])
                 pass
             else:
-                print("[-] FormatError...")
+                try:
+                    body = json.loads(response.text)
+                    if body["state"] == "OK":
+                        #TODO
+                        pass
+                    else:
+                        print("[-] FormatError...")
+                except:
+                    print("[-] FormatError...")
+        except requests.exceptions.ConnectionError:
+            print("[-] NetworkError...")
 
     def readSensor(self, command):
         if command not in PIN:
@@ -56,6 +66,7 @@ class LightManager:
 def main():
     try:
         manager = LightManager()
+        manager.updateState()
     except KeyboardInterrupt:
         pass
 

@@ -4,18 +4,19 @@ import json
 
 
 class LightManager:
-    HOST = "http://naver.com"
-    deviceID = "1234"
+    HOST = "http://ss5h.namsu.xyz:9940"
+    deviceID = "12345"
     itemPK = -1
     lightColor = (128, 64, 200)
     lightStrength = 50
-    PIN = {"W_sensor": 28, "LED_3000K": 1, "LED_4500K": 2, "LED_6000K": 3, "LED_10000K": 4, "LED_20000K": 5, "LED_30000K": 6, "consumption": 29, "temperature": 29}
+    PIN = {"W_sensor": 38, "LED_3000K": 29, "LED_4500K": 31, "LED_6000K": 33, "LED_10000K": 35, "LED_20000K": 36, "LED_30000K": 37, "consumption": 39, "temperature": 40}
     PWM = {}
 
-    def updateState(self):
+    def syncState(self):
         try:
             data = {"deviceID": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
             response = requests.post(self.HOST + "/StateDevice", data=data)
+            print(response.status_code)
             if response.status_code != 200:
                 print("[-] ServerError...")
             else:
@@ -54,7 +55,14 @@ class LightManager:
         item["time"]
         pass
 
-    def __init__(self, mode=gpio.BCM):
+    def registerDevice(self):
+        response = requests.post(self.HOST + "/devices/register/", data={"key": self.deviceID})
+        if response.status_code != 200 or response.status_code != 400:
+            print("[-] ServerError...")
+        else:
+            print("[+] Register Success")
+
+    def __init__(self, mode=gpio.BOARD):
         gpio.setmode(mode)
         gpio.setup(self.PIN["W_sensor"], gpio.IN)
         for key, value in self.PIN.items():
@@ -73,7 +81,8 @@ class LightManager:
 def main():
     try:
         manager = LightManager()
-        manager.updateState()
+        manager.registerDevice()
+        manager.syncState()
     except KeyboardInterrupt:
         pass
 

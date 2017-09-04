@@ -14,8 +14,9 @@ class LightManager:
 
     def syncState(self):
         try:
-            data = {"key": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
+            data = {"device": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
             response = requests.post(self.HOST + "/devices/state", data=data)
+            print(response.text)
             print(response.status_code)
             if response.status_code != 200:
                 print("[-] ServerError...")
@@ -23,18 +24,7 @@ class LightManager:
                 body = json.loads(response.text)
                 if body["state"] == "OK":
                     #TODO
-                    #controlDevice(body["item"])
                     pass
-                else:
-                    try:
-                        body = json.loads(response.text)
-                        if body["state"] == "OK":
-                            #TODO
-                            pass
-                        else:
-                            print("[-] FormatError...")
-                    except:
-                        print("[-] FormatError...")
         except requests.exceptions.ConnectionError:
             print("[-] NetworkError...")
 
@@ -50,6 +40,8 @@ class LightManager:
         pass
 
     def controlDevice(self, item):
+        def controlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
+            pass
         item["amount"]
         item["temperature"]
         item["time"]

@@ -14,8 +14,8 @@ class LightManager:
 
     def syncState(self):
         try:
-            data = {"deviceID": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
-            response = requests.post(self.HOST + "/StateDevice", data=data)
+            data = {"key": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
+            response = requests.post(self.HOST + "/devices/state", data=data)
             print(response.status_code)
             if response.status_code != 200:
                 print("[-] ServerError...")
@@ -65,6 +65,8 @@ class LightManager:
     def __init__(self, mode=gpio.BOARD):
         gpio.setmode(mode)
         gpio.setup(self.PIN["W_sensor"], gpio.IN)
+        gpio.setup(self.PIN["consumption"], gpio.IN)
+        gpio.setup(self.PIN["temperature"], gpio.IN)
         for key, value in self.PIN.items():
             if key.startswith("LED_"):
                 gpio.setup(value, gpio.OUT)

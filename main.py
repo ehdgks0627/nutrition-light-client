@@ -43,7 +43,6 @@ class LightManager:
         def controlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
             pass
         item["amount"]
-        item["temperature"]
         item["time"]
         pass
 
@@ -66,7 +65,7 @@ class LightManager:
                 self.PWM[key].start(50)
 
     def __str__(self):
-        return "LightManager@%s"%(deviceID)
+        return "LightManager@%s"%(self.deviceID)
 
     def __del__(self):
         gpio.cleanup()

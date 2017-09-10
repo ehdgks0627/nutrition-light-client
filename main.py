@@ -1,6 +1,9 @@
 import RPi.GPIO as gpio
 import requests
 import json
+import os
+import sys
+import netifaces as ni
 
 
 class LightManager:
@@ -12,7 +15,29 @@ class LightManager:
     PIN = {"W_sensor": 38, "LED_3000K": 29, "LED_4500K": 31, "LED_6000K": 33, "LED_10000K": 35, "LED_20000K": 36, "LED_30000K": 37, "consumption": 39, "temperature": 40}
     PWM = {}
 
-    def syncState(self):
+    def JoinWifiWithBluetooth(self):
+        def CheckInternet(url='http://www.google.com/', timeout=5):
+            try:
+		_ = requests.get(url, timeout=timeout)
+		return True
+            except requests.ConnectionError:
+                return False
+
+        while True:
+            #communicatio wifi with bluetooth
+            SSID = ""
+            PASSWORD = ""
+            os.system('sudo ifconfig wlan0 up')
+            os.system('sudo iwconfig wlan0 essid {} key s:{}'.format(SSID, PASSWORD))
+            os.system('sudo dhclient wlan0')
+            if self.CheckInternet():
+                #send success to bluetooth
+                pass
+            else:
+                #failure with message
+                continue
+
+    def SyncState(self):
         try:
             data = {"device": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
             response = requests.post(self.HOST + "/devices/state", data=data)
@@ -28,7 +53,8 @@ class LightManager:
         except requests.exceptions.ConnectionError:
             print("[-] NetworkError...")
 
-    def readSensor(self, command):
+
+    def ReadSensor(self, command):
         if command not in self.PIN:
             print("%s is not in PIN MAP"%(command))
             return
@@ -39,19 +65,22 @@ class LightManager:
         #TODO
         pass
 
-    def controlDevice(self, item):
+
+    def ControlDevice(self, item):
         def controlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
             pass
         item["amount"]
         item["time"]
         pass
 
-    def registerDevice(self):
+
+    def RegisterDevice(self):
         response = requests.post(self.HOST + "/devices/register/", data={"key": self.deviceID})
         if response.status_code != 200 or response.status_code != 400:
             print("[-] ServerError...")
         else:
             print("[+] Register Success")
+
 
     def __init__(self, mode=gpio.BOARD):
         gpio.setmode(mode)
@@ -64,8 +93,10 @@ class LightManager:
                 self.PWM[key] = gpio.PWM(value, 100)
                 self.PWM[key].start(50)
 
+
     def __str__(self):
-        return "LightManager@%s"%(self.deviceID)
+        return "<LightManager@%s>"%(self.deviceID)
+
 
     def __del__(self):
         gpio.cleanup()
@@ -74,8 +105,9 @@ class LightManager:
 def main():
     try:
         manager = LightManager()
-        manager.registerDevice()
-        manager.syncState()
+        manager.JoinWifiWithBluetooth()
+        manager.RegisterDevice()
+        manager.SyncState()
     except KeyboardInterrupt:
         pass
 

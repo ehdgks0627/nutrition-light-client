@@ -9,7 +9,7 @@ class LightManager:
     itemPK = -1
     lightColor = (128, 64, 200)
     lightStrength = 50
-    PIN = {"W_sensor": 38, "LED_3000K": 29, "LED_4500K": 31, "LED_6000K": 33, "LED_10000K": 35, "LED_20000K": 36, "LED_30000K": 37, "consumption": 39, "temperature": 40}
+    PIN = {"W_sensor": 29, "LED_3000K": 31, "LED_4500K": 32, "LED_6000K": 33, "LED_10000K": 35, "LED_20000K": 36, "LED_30000K": 37, "consumption": 38, "temperature": 40}
     PWM = {}
 
     def SyncState(self):

@@ -1,7 +1,7 @@
 import RPi.GPIO as gpio
 import requests
 import json
-
+from wifi_setting import *
 
 class LightManager:
     HOST = "http://ss5h.namsu.xyz:9940"
@@ -12,7 +12,7 @@ class LightManager:
     PIN = {"W_sensor": 38, "LED_3000K": 29, "LED_4500K": 31, "LED_6000K": 33, "LED_10000K": 35, "LED_20000K": 36, "LED_30000K": 37, "consumption": 39, "temperature": 40}
     PWM = {}
 
-    def syncState(self):
+    def SyncState(self):
         try:
             data = {"device": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
             response = requests.post(self.HOST + "/devices/state", data=data)
@@ -29,7 +29,7 @@ class LightManager:
             print("[-] NetworkError...")
 
 
-    def readSensor(self, command):
+    def ReadSensor(self, command):
         if command not in self.PIN:
             print("%s is not in PIN MAP"%(command))
             return
@@ -41,15 +41,15 @@ class LightManager:
         pass
 
 
-    def controlDevice(self, item):
-        def controlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
+    def ControlDevice(self, item):
+        def ControlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
             pass
         item["amount"]
         item["time"]
         pass
 
 
-    def registerDevice(self):
+    def RegisterDevice(self):
         response = requests.post(self.HOST + "/devices/register/", data={"key": self.deviceID})
         if response.status_code != 200 or response.status_code != 400:
             print("[-] ServerError...")
@@ -80,8 +80,9 @@ class LightManager:
 def main():
     try:
         manager = LightManager()
-        manager.registerDevice()
-        manager.syncState()
+        manager.SetWifi(SSID, PASSWORD)
+        manager.RegisterDevice()
+        manager.SyncState()
     except KeyboardInterrupt:
         pass
 

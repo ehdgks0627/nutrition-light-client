@@ -28,6 +28,7 @@ class LightManager:
         except requests.exceptions.ConnectionError:
             print("[-] NetworkError...")
 
+
     def readSensor(self, command):
         if command not in self.PIN:
             print("%s is not in PIN MAP"%(command))
@@ -39,6 +40,7 @@ class LightManager:
         #TODO
         pass
 
+
     def controlDevice(self, item):
         def controlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
             pass
@@ -46,12 +48,14 @@ class LightManager:
         item["time"]
         pass
 
+
     def registerDevice(self):
         response = requests.post(self.HOST + "/devices/register/", data={"key": self.deviceID})
         if response.status_code != 200 or response.status_code != 400:
             print("[-] ServerError...")
         else:
             print("[+] Register Success")
+
 
     def __init__(self, mode=gpio.BOARD):
         gpio.setmode(mode)
@@ -64,8 +68,10 @@ class LightManager:
                 self.PWM[key] = gpio.PWM(value, 100)
                 self.PWM[key].start(50)
 
+
     def __str__(self):
-        return "LightManager@%s"%(self.deviceID)
+        return "<LightManager@%s>"%(self.deviceID)
+
 
     def __del__(self):
         gpio.cleanup()

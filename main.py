@@ -1,11 +1,10 @@
 import RPi.GPIO as gpio
 import requests
 import json
-from wifi_setting import *
 
 class LightManager:
     HOST = "http://ss5h.namsu.xyz:9940"
-    deviceID = "12345"
+    deviceID = "123456"
     itemPK = -1
     lightColor = (128, 64, 200)
     lightStrength = 50
@@ -14,7 +13,7 @@ class LightManager:
 
     def SyncState(self):
         try:
-            data = {"device": self.deviceID, "consumption": self.readSensor("consumption"), "temperature": self.readSensor("temperature")}
+            data = {"device": self.deviceID, "consumption": self.ReadSensor("consumption"), "temperature": self.ReadSensor("temperature")}
             response = requests.post(self.HOST + "/devices/state", data=data)
             print(response.text)
             print(response.status_code)
@@ -80,7 +79,6 @@ class LightManager:
 def main():
     try:
         manager = LightManager()
-        manager.SetWifi(SSID, PASSWORD)
         manager.RegisterDevice()
         manager.SyncState()
     except KeyboardInterrupt:

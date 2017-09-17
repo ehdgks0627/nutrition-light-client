@@ -55,6 +55,11 @@ class LightManager:
         else:
             print("[-] ServerError...")
 
+    def GetCpuTemperature(self):
+        process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
+        output, _error = process.communicate()
+        return float(output[output.index('=') + 1:output.rindex("'")])"'")])
+
 
     def __init__(self, mode=gpio.BOARD):
         self.session = requests.Session()

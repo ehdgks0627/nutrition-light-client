@@ -28,22 +28,51 @@ class LightManager:
 
 
     def ReadSensor(self, command):
-        return 1.3
         if command not in self.PIN:
             print("%s is not in PIN MAP"%(command))
-            return
+            return None
         if command == "consumption":
             pass
         elif command == "temperature":
-            pass
-        #TODO
-        pass
+            return self.GetCpuTemperature()
+        return None
 
 
     def ControlDevice(self, item):
+        def RagneMap(x, in_min, in_max, out_min, out_max):
+            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min 
+
+        def MAPPING(temperature):
+            if temperature < 3000:
+                return 0
+            elif 3000 <= temperature < 4500:
+                return RagneMap(temperature, 3000, 4500, 0, 1000)
+            elif 4500 <= temperature < 6000:
+                return RagneMap(temperature, 4500, 6000, 1000, 2000)
+            elif 6000 <= temperature < 10000:
+                return RagneMap(temperature, 6000, 10000, 2000, 3000)
+            elif 10000 <= temperature < 20000:
+                return RagneMap(temperature, 10000, 20000, 3000, 4000)
+            elif 20000 <= temperature < 30000:
+                return RagneMap(temperature, 4500, 6000, 4000, 5000)
+            elif 30000 <= temperature:
+                return 5000
+
+        def CalLED(temperature, amount, x):
+            return ((5.0*amount/2.0)/math.sqrt(2.0*math.pi))*pow(math.e,(-((x-temperature)**2.0)/300000.0))
+
         def ControlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
             pass
-        item["amount"]
+        temperature = MAPPING(item["temperature"])
+        amount = item["amount"]
+#temperature mapping
+        map_base = 1000
+        ControlLED(CalLED(temperature, amount, map_base + 0),
+                   CalLED(temperature, amount, map_base + 1000),
+                   CalLED(temperature, amount, map_base + 2000),
+                   CalLED(temperature, amount, map_base + 3000),
+                   CalLED(temperature, amount, map_base + 4000),
+                   CalLED(temperature, amount, map_base + 5000))
         item["time"]
         pass
 

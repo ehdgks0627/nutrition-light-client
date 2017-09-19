@@ -63,11 +63,17 @@ class LightManager:
             return ((5.0*amount/2.0)/math.sqrt(2.0*math.pi))*pow(math.e,(-((x-temperature)**2.0)/300000.0))
 
         def ControlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
-            pass
+            PWM["LED_3000K"].ChangeDutyCycle(LED_3000)
+            PWM["LED_4500K"].ChangeDutyCycle(LED_4500)
+            PWM["LED_6000K"].ChangeDutyCycle(LED_6000)
+            PWM["LED_10000K"].ChangeDutyCycle(LED_10000)
+            PWM["LED_20000K"].ChangeDutyCycle(LED_20000)
+            PWM["LED_30000K"].ChangeDutyCycle(LED_30000)
+
         temperature = MAPPING(item["temperature"])
         amount = item["amount"]
 #temperature mapping
-        map_base = 1000
+        map_base = 0
         ControlLED(CalLED(temperature, amount, map_base + 0),
                    CalLED(temperature, amount, map_base + 1000),
                    CalLED(temperature, amount, map_base + 2000),
@@ -100,8 +106,8 @@ class LightManager:
         for key, value in self.PIN.items():
             if key.startswith("LED_"):
                 gpio.setup(value, gpio.OUT)
-                self.PWM[key] = gpio.PWM(value, 100)
-                self.PWM[key].start(50)
+                self.PWM[key] = gpio.PWM(value, 1000) # 1000hz
+                self.PWM[key].start(0)
 
 
     def __str__(self):

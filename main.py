@@ -1,10 +1,11 @@
 import RPi.GPIO as gpio
 import requests
 import json
+from subprocess import Popen, PIPE
 
 class LightManager:
     HOST = "http://ss5h.namsu.xyz:9940"
-    deviceID = "12345678"
+    deviceID = "12345678910"
     itemPK = -1
     lightColor = (128, 64, 200)
     lightStrength = 50
@@ -21,23 +22,23 @@ class LightManager:
                 print("[-] ServerError...")
             else:
                 body = json.loads(response.text)
-                print(body)
+                light = body["light"]
+                print(light)
+                #self.ControlDevice(item)
                 #TODO
         except requests.exceptions.ConnectionError:
             print("[-] NetworkError...")
 
 
     def ReadSensor(self, command):
-        return 1.3
         if command not in self.PIN:
             print("%s is not in PIN MAP"%(command))
-            return
+            return None
         if command == "consumption":
             pass
         elif command == "temperature":
-            pass
-        #TODO
-        pass
+            return self.GetCpuTemperature()
+        return None
 
 
     def ControlDevice(self, item):
@@ -58,7 +59,7 @@ class LightManager:
     def GetCpuTemperature(self):
         process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
         output, _error = process.communicate()
-        return float(output[output.index('=') + 1:output.rindex("'")])"'")])
+        return float(output[output.index('=') + 1:output.rindex("'")])
 
 
     def __init__(self, mode=gpio.BOARD):
@@ -85,7 +86,7 @@ class LightManager:
 def main():
     try:
         manager = LightManager()
-        manager.RegisterDevice()
+        #manager.RegisterDevice()
         manager.SyncState()
     except KeyboardInterrupt:
         pass

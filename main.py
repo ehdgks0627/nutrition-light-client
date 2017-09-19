@@ -40,7 +40,7 @@ class LightManager:
 
     def ControlDevice(self, item):
         def RagneMap(x, in_min, in_max, out_min, out_max):
-            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min 
+            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
         def MAPPING(temperature):
             if temperature < 3000:
@@ -87,7 +87,7 @@ class LightManager:
     def GetCpuTemperature(self):
         process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
         output, _error = process.communicate()
-        return float(output[output.index('=') + 1:output.rindex("'")])"'")])
+        return float(output[output.index('=') + 1:output.rindex("'")])
 
 
     def __init__(self, mode=gpio.BOARD):

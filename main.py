@@ -1,6 +1,7 @@
 import RPi.GPIO as gpio
 import requests
 import json
+import math
 
 class LightManager:
     HOST = "http://ss5h.namsu.xyz:9940"

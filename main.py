@@ -2,6 +2,7 @@ import RPi.GPIO as gpio
 import requests
 import json
 import math
+import time
 
 class LightManager:
     HOST = "http://ss5h.namsu.xyz:9940"
@@ -72,7 +73,6 @@ class LightManager:
 
         temperature = MAPPING(item["temperature"])
         amount = item["amount"]
-#temperature mapping
         map_base = 0
         ControlLED(CalLED(temperature, amount, map_base + 0),
                    CalLED(temperature, amount, map_base + 1000),
@@ -80,7 +80,7 @@ class LightManager:
                    CalLED(temperature, amount, map_base + 3000),
                    CalLED(temperature, amount, map_base + 4000),
                    CalLED(temperature, amount, map_base + 5000))
-        item["time"]
+        #item["time"]
         pass
 
 
@@ -122,7 +122,9 @@ def main():
     try:
         manager = LightManager()
         manager.RegisterDevice()
-        manager.SyncState()
+        while True:
+            manager.SyncState()
+            time.sleep(5)
     except KeyboardInterrupt:
         pass
 

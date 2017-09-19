@@ -1,13 +1,10 @@
-import RPi.GPIO as gpio
 import requests
-import json
 import math
-import time
-from subprocess import Popen, PIPE
+import json
 
 class LightManager:
     HOST = "http://ss5h.namsu.xyz:9940"
-    deviceID = "12345678910"
+    deviceID = "12345678"
     itemPK = -1
     lightColor = (128, 64, 200)
     lightStrength = 50
@@ -24,9 +21,7 @@ class LightManager:
                 print("[-] ServerError...")
             else:
                 body = json.loads(response.text)
-                light = body["light"]
-                print(light)
-                #self.ControlDevice(item)
+                print(body)
                 #TODO
         except requests.exceptions.ConnectionError:
             print("[-] NetworkError...")
@@ -67,15 +62,11 @@ class LightManager:
             return ((5.0*amount/2.0)/math.sqrt(2.0*math.pi))*pow(math.e,(-((x-temperature)**2.0)/300000.0))
 
         def ControlLED(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000):
-            PWM["LED_3000K"].ChangeDutyCycle(LED_3000)
-            PWM["LED_4500K"].ChangeDutyCycle(LED_4500)
-            PWM["LED_6000K"].ChangeDutyCycle(LED_6000)
-            PWM["LED_10000K"].ChangeDutyCycle(LED_10000)
-            PWM["LED_20000K"].ChangeDutyCycle(LED_20000)
-            PWM["LED_30000K"].ChangeDutyCycle(LED_30000)
-
+            print("{:.5f}|{:.5f}|{:.5f}|{:.5f}|{:.5f}|{:.5f}".format(LED_3000, LED_4500, LED_6000, LED_10000, LED_20000, LED_30000))
+            pass
         temperature = MAPPING(item["temperature"])
         amount = item["amount"]
+#temperature mapping
         map_base = 0
         ControlLED(CalLED(temperature, amount, map_base + 0),
                    CalLED(temperature, amount, map_base + 1000),
@@ -83,7 +74,6 @@ class LightManager:
                    CalLED(temperature, amount, map_base + 3000),
                    CalLED(temperature, amount, map_base + 4000),
                    CalLED(temperature, amount, map_base + 5000))
-        #item["time"]
         pass
 
 
@@ -100,34 +90,20 @@ class LightManager:
         return float(output[output.index('=') + 1:output.rindex("'")])
 
 
-    def __init__(self, mode=gpio.BOARD):
-        self.session = requests.Session()
-        gpio.setmode(mode)
-        gpio.setup(self.PIN["W_sensor"], gpio.IN)
-        gpio.setup(self.PIN["consumption"], gpio.IN)
-        gpio.setup(self.PIN["temperature"], gpio.IN)
-        for key, value in self.PIN.items():
-            if key.startswith("LED_"):
-                gpio.setup(value, gpio.OUT)
-                self.PWM[key] = gpio.PWM(value, 1000) # 1000hz
-                self.PWM[key].start(0)
-
 
     def __str__(self):
         return "<LightManager@{}>".format(self.deviceID)
 
 
-    def __del__(self):
-        gpio.cleanup()
-
-
 def main():
     try:
         manager = LightManager()
-        manager.RegisterDevice()
-        while True:
-            manager.SyncState()
-            time.sleep(5)
+        #manager.RegisterDevice()
+        #manager.SyncState()
+        for i in range(3000, 40000, 1000):
+            print("temperature %d"%(i))
+            item1 = {"amount": 100, "temperature": i}
+            manager.ControlDevice(item1)
     except KeyboardInterrupt:
         pass
 

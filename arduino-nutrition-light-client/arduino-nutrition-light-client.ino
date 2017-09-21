@@ -7,8 +7,8 @@
 #define PIN_LED_10000K   4
 #define PIN_LED_20000K   5
 #define PIN_LED_30000K   6
-#define PIN_Consumption  7
-#define PIN_Temperature  8
+#define PIN_Consumption  A0
+#define PIN_Temperature  A1
 
 #define HOST             "http://ss5h.namsu.xyz:9940"
 #define deviceID         "12345678910"
@@ -55,7 +55,17 @@ double map_temperature_to_range(double temperature)
   else if(30000 <= temperature)
   {
     return 5000;
-  } 
+  }
+}
+
+void RegisterDevice()
+{
+  //POST HOST + "/devices/register/", data = "deviceID":deviceID
+}
+
+void SyncState()
+{
+  //POST HOST + "/devices/state/", data = "deviceID":deviceID consumption:1.3, temperature:4.6
 }
 
 void setup() {
@@ -67,20 +77,14 @@ void setup() {
   pinMode(PIN_LED_30000K, OUTPUT);
   pinMode(PIN_Consumption, INPUT);
   pinMode(PIN_Temperature, INPUT);
-  //RegisterDevice
-  //POST HOST + "/devices/register/", data = "deviceID":deviceID
-
-}
-
-void syncState()
-{
-  
+  RegisterDevice();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  double W = analogRead(PIN_Consumption);
-  double T = analogRead(PIN_Temperature);
+  double T = (analogRead(PIN_Temperature) * 500.0) 1024.0;
+  double W = (analogRead(PIN_Consumption) * 500.0 )/ 9.31;
+  registerDevice();
   syncState();
   delay(5000);
 }

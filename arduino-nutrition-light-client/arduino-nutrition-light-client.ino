@@ -18,7 +18,7 @@
 
 double CalLED(double temperature, double amount, double x)
 {
-  return ((5.0*amount/2.0)/math.sqrt(2.0*math.pi))*pow(math.e,(-((x-temperature)**2.0)/300000.0))
+  return ((5.0*amount/2.0)/sqrt(2.0*MATH_PI))*pow(MATH_E,(-((x-temperature)**2.0)/300000.0))
 }
 
 double double_map(double x, double in_min, double in_max, double out_min, double out_max)

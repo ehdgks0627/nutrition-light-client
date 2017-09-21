@@ -18,7 +18,7 @@
 
 double CalLED(double temperature, double amount, double x)
 {
-  return ((5.0*amount/2.0)/sqrt(2.0*MATH_PI))*pow(MATH_E,(-((x-temperature)**2.0)/300000.0))
+  return ((5.0*amount/2.0)/sqrt(2.0*MATH_PI))*pow(MATH_E,(-(pow((x-temperature), 2.0))/300000.0));
 }
 
 double double_map(double x, double in_min, double in_max, double out_min, double out_max)
@@ -82,9 +82,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  double T = (analogRead(PIN_Temperature) * 500.0) 1024.0;
-  double W = (analogRead(PIN_Consumption) * 500.0 )/ 9.31;
-  registerDevice();
-  syncState();
+  double T = (analogRead(PIN_Temperature) * 500.0) / 1024.0;
+  double W = (analogRead(PIN_Consumption) * 500.0) / 9.31;
+  SyncState();
   delay(5000);
 }
